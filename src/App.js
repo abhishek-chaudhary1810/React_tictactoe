@@ -8,11 +8,21 @@ function Box({ value, onBoxClick }) {
   );
 }
 function Board() {
+  const [xisnext,xSetisnext]=useState(true);
   const [boxes, setboxes] = useState(Array(9).fill(null));
   function handleClick(i) {
+   if(boxes[i]){
+    return;
+   }
     const nextBoxes = boxes.slice();
-    nextBoxes[i] = "X";
+    if (xisnext==true){
+      nextBoxes[i] = "X";
+    }
+    else{
+      nextBoxes[i]="O";
+    }
     setboxes(nextBoxes);
+    xSetisnext(!xisnext);
   }
   return (
     <>
