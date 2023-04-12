@@ -1,32 +1,35 @@
 import "./App.css";
-
-function Box({ value }) {
-  function handleClick() {
-    console.log("Clicked");
-  }
+import { useState } from "react";
+function Box({ value, onBoxClick }) {
   return (
-    <button className="buttonStyle" onClick={handleClick}>
+    <button className="buttonStyle" onClick={onBoxClick}>
       {value}
     </button>
   );
 }
 function Board() {
+  const [boxes, setboxes] = useState(Array(9).fill(null));
+  function handleClick(i) {
+    const nextBoxes = boxes.slice();
+    nextBoxes[i] = "X";
+    setboxes(nextBoxes);
+  }
   return (
     <>
       <div className="board-row">
-        <Box value="1" />
-        <Box value="2" />
-        <Box value="3" />
+        <Box value={boxes[0]} onBoxClick={()=>handleClick(0)} />
+        <Box value={boxes[1]} onBoxClick={()=>handleClick(1)} />
+        <Box value={boxes[2]} onBoxClick= {()=>handleClick(2)}/>
       </div>
       <div className="board-row">
-        <Box value="4" />
-        <Box value="5" />
-        <Box value="6" />
+        <Box value={boxes[3]} onBoxClick={()=>handleClick(3)} />
+        <Box value={boxes[4]} onBoxClick={()=>handleClick(4)} />
+        <Box value={boxes[5]} onBoxClick={()=>handleClick(5)} />
       </div>
       <div className="board-row">
-        <Box value="7" />
-        <Box value="8" />
-        <Box value="9" />
+        <Box value={boxes[6]} onBoxClick={()=>handleClick(6)} />
+        <Box value={boxes[7]} onBoxClick={()=>handleClick(7)} />
+        <Box value={boxes[8]} onBoxClick={()=>handleClick(8)} />
       </div>
     </>
   );
