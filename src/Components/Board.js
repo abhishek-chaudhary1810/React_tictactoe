@@ -1,31 +1,4 @@
 import { useState } from "react";
-//top component
-export default function Game() {
-  const [xIsNext, xSetNext] = useState(true);
-  //array of 9 null element in a state initially
-  const [moveHistory, setMoveHistory] = useState([Array(9).fill(null)]);
-
-  const currentSquares = moveHistory[moveHistory.length - 1];
-  //nextboxes is prop we could use here as we have lifted state up
-  function handlePlay(nextBoxes) {
-    //appending a state into already existed state
-    setMoveHistory([...moveHistory, nextBoxes]);
-    //next user turn is determined by setnext as after a move its boolean is flipped
-    xSetNext(!xIsNext);
-  }
-  return (
-    <>
-      <div>
-        {/* Board component is lifted up to Game component and passed 3 props*/}
-        <Board xIsNext={xIsNext} boxes={currentSquares} onPlay={handlePlay} />
-      </div>
-      <div>
-        {/* ordered list in a div */}
-        <ol>{}</ol>
-      </div>
-    </>
-  );
-}
 //most low level component
 function Box({ value, onBoxClick }) {
   return (
@@ -34,6 +7,7 @@ function Box({ value, onBoxClick }) {
     </button>
   );
 }
+
 function Board({ xIsNext, boxes, onPlay }) {
   function handleClick(i) {
     //checked initial and winner condition
@@ -82,6 +56,53 @@ function Board({ xIsNext, boxes, onPlay }) {
 }
 //javascript function to check if tiktaktoe is completed either by "X" or "O"
 //boxes is passed as a prop inside Board component during this calculate winner function call
+//top component
+export default function Game() {
+  const [xIsNext, xSetNext] = useState(true);
+  //array of 9 null element in a state initially
+  const [moveHistory, setMoveHistory] = useState([Array(9).fill(null)]);
+  //const currentBoxes = moveHistory[moveHistory.length - 1];
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentBoxes = moveHistory[currentMove];
+  //nextboxes is prop we could use here as we have lifted state up
+  function handlePlay(nextBoxes) {
+    //appending a state into already existed state
+    const nextHistory = [...moveHistory.slice(0, currentMove + 1), nextBoxes];
+    setMoveHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
+    xSetNext(!xIsNext);
+  }
+  function jumpTo(nextMove) {
+    setCurrentMove(moveHistory - 1);
+    xSetNext(nextMove % 2 === 0);
+  }
+ //transformation of array to react elements using map
+  const moves = moveHistory.map((boxes, move) => {
+  console.log(move);
+    let description;
+    if (move > 0) {
+      description = "Go to Move #" + move;
+    } else {
+      description = "Go to Game Start";
+    }
+    return (
+      <li key={move}>
+        <button className="buttonStyle" onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+  return (
+    <>
+      <div>
+        {/* Board component is lifted up to Game component and passed 3 props*/}
+        <Board xIsNext={xIsNext} boxes={currentBoxes} onPlay={handlePlay} />
+      </div>
+      <div>
+        <ol>{moves}</ol>
+      </div>
+    </>
+  );
+}
 function calculateWinner(boxes) {
   const lines = [
     [0, 1, 2],
@@ -95,7 +116,8 @@ function calculateWinner(boxes) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (boxes[a] && boxes[a] === boxes[b] && boxes[a] === boxes[c]) {
+    if (boxes[a] && boxes[a] === boxes[b] && boxes[a] === boxes[c])
+     {
       return boxes[a];
     }
   }
