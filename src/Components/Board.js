@@ -7,7 +7,6 @@ function Box({ value, onBoxClick }) {
     </button>
   );
 }
-
 function Board({ xIsNext, boxes, onPlay }) {
   function handleClick(i) {
     //checked initial and winner condition
@@ -58,27 +57,24 @@ function Board({ xIsNext, boxes, onPlay }) {
 //boxes is passed as a prop inside Board component during this calculate winner function call
 //top component
 export default function Game() {
-  const [xIsNext, xSetNext] = useState(true);
   //array of 9 null element in a state initially
   const [moveHistory, setMoveHistory] = useState([Array(9).fill(null)]);
   //const currentBoxes = moveHistory[moveHistory.length - 1];
   const [currentMove, setCurrentMove] = useState(0);
   const currentBoxes = moveHistory[currentMove];
+  const xIsNext = currentMove % 2 === 0;
   //nextboxes is prop we could use here as we have lifted state up
   function handlePlay(nextBoxes) {
     //appending a state into already existed state
     const nextHistory = [...moveHistory.slice(0, currentMove + 1), nextBoxes];
     setMoveHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-    xSetNext(!xIsNext);
   }
   function jumpTo(nextMove) {
-    setCurrentMove(moveHistory - 1);
-    xSetNext(nextMove % 2 === 0);
+    setCurrentMove(nextMove);
   }
- //transformation of array to react elements using map
+  //transformation of array to react elements using map
   const moves = moveHistory.map((boxes, move) => {
-  console.log(move);
     let description;
     if (move > 0) {
       description = "Go to Move #" + move;
@@ -87,7 +83,7 @@ export default function Game() {
     }
     return (
       <li key={move}>
-        <button className="buttonStyle" onClick={() => jumpTo(move)}>{description}</button>
+        <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
   });
@@ -116,9 +112,9 @@ function calculateWinner(boxes) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (boxes[a] && boxes[a] === boxes[b] && boxes[a] === boxes[c])
-     {
+    if (boxes[a] && boxes[a] === boxes[b] && boxes[a] === boxes[c]) {
       return boxes[a];
     }
   }
+  return null;
 }
